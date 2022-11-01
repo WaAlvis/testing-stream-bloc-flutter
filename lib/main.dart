@@ -33,29 +33,38 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _count = 0;
-  StreamController<String> streamController = StreamController<String>();
+  StreamController<String> streamController =
+      StreamController.broadcast(); //Agrega .broadcast acá
 
   @override
   void initState() {
+    super.initState();
     print('Creando el StreamController ...');
-
+//Primera subscripción
     streamController.stream.listen(
       (event) {
-        print('listen de los eventos, data llegada... => $event');
+        print('listen de los eventos, data llegada...En Stream*1 => $event');
       },
-      onDone: () => print('Stream Done!!!'),
+      onDone: () => print('Stream*1 Done!!!'),
       onError: (error) => print('Stream  Error $error'),
+    );
+//Segunda Subscription
+    streamController.stream.listen(
+      (event) {
+        print('listen de los eventos, data llegada...En Stream*2 => $event');
+      },
+      onDone: () => print('Stream*2 Done!!!'),
+      onError: (error) => print('Stream*2  Error $error'),
     );
 
     print('Esta es la contiuacion del codigo initState...');
-    super.initState();
-    streamController.add('**Esto es un evendo agregado directamente**');
+    // streamController.add(
+    //     '**Esto es un evendo agregado directamente, para ambos Listen *1*2 **');
     getData();
   }
 
   @override
   void dispose() {
-
     streamController
         .close(); //Los Streams deben cerrarse cuando no se necesiten
     print("Nuestro Stream Controller ha sido Cerrado!!");
@@ -63,8 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<String> getData() async {
-    await Future.delayed(Duration(milliseconds: 5000));
     print("Fetched Data, despues de 5 segundos...");
+    await Future.delayed(Duration(milliseconds: 5000));
     streamController.add('*Esta es la nueva data Retornada!!!*');
     return '*Esta es la nueva data Retornada!!!*';
   }
@@ -95,7 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  Route route = MaterialPageRoute(builder: (context) => Page2());
+                  Route route =
+                      MaterialPageRoute(builder: (context) => Page2());
                   Navigator.pushReplacement(context, route);
                 },
                 child: Text('Navegar a page2')),
